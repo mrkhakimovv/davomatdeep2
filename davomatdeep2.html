@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Davomat Tizimi — Guruhlar</title>
+<style>
+  :root {
+    --bg1: #1e3a8a;
+    --bg2: #7c3aed;
+    --card: rgba(255,255,255,0.95);
+    --glass: rgba(255,255,255,0.1);
+    --accent: #4a90e2;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #1f2937;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    color: white;
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    line-height: 1.5;
+  }
+
+  /* Layout */
+  .sidebar {
+    width: 320px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    backdrop-filter: blur(12px);
+    background: var(--glass);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+  }
+  
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    min-width: 0;
+  }
+  
+  h1 {
+    margin: 0 0 16px 0;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  
+  .controls-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  /* Group card */
+  .group-card {
+    background: rgba(255,255,255,0.08);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  
+  .group-card:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+  }
+  
+  .group-card .info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .group-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  
+  .group-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    overflow: hidden;
+  }
+  
+  .small {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+  }
+  
+  .settings-btn {
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  
+  .settings-btn:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* Main area */
+  .card {
+    background: var(--card);
+    color: var(--text);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 40px rgba(2,6,23,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .top-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  
+  button {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  
+  button.primary {
+    background: var(--accent);
+    color: white;
+  }
+  
+  button.primary:hover {
+    background: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+  
+  button.success {
+    background: var(--success);
+    color: white;
+  }
+  
+  button.success:hover {
+    background: #059669;
+    transform: translateY(-1px);
+  }
+  
+  button.warning {
+    background: var(--warning);
+    color: white;
+  }
+  
+  button.warning:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+  }
+  
+  button.danger {
+    background: var(--danger);
+    color: white;
+  }
+  
+  button.danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+  }
+  
+  button.ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  
+  button.ghost:hover {
+    background: #f8fafc;
+  }
+  
+  input, select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 14px;
+    background: white;
+    transition: all 0.2s;
+    min-width: 0;
+  }
+  
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Table */
+  .attendance-wrap {
+    overflow: auto;
+    margin-top: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table.attendance {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+  }
+  
+  table.attendance th, table.attendance td {
+    border: 1px solid var(--border);
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  table.attendance th {
+    background: var(--accent);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  
+  .student-name-cell {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 1;
+    min-width: 150px;
+    text-align: left;
+  }
+  
+  .attendance-cell {
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  
+  .attendance-cell:hover {
+    transform: scale(1.05);
+  }
+  
+  .attendance-controls {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    margin-top: 4px;
+  }
+  
+  .attendance-btn {
+    padding: 2px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+    min-width: 24px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-present {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+  
+  .btn-absent {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  
+  .btn-late {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+  
+  .btn-clear {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+  }
+  
+  td.present {
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 600;
+  }
+  
+  td.absent {
+    background: #fee2e2;
+    color: #991b1b;
+    font-weight: 600;
+  }
+  
+  td.late {
+    background: #fef3c7;
+    color: #92400e;
+    font-weight: 600;
+  }
+  
+  .date-header {
+    font-size: 11px;
+    color: white;
+    font-weight: 500;
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    padding: 8px 4px;
+    min-height: 80px;
+    white-space: nowrap;
+  }
+  
+  .student-row:hover {
+    background: #f8fafc;
+  }
+  
+  .student-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .student-actions button {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  /* Mobile attendance grid */
+  .mobile-attendance {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .mobile-student-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  
+  .mobile-student-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .mobile-student-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  .mobile-dates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+  }
+  
+  .mobile-date-cell {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .mobile-date-cell:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Modals */
+  .modal-back {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    padding: 16px;
+  }
+  
+  .modal {
+    background: white;
+    color: var(--text);
+    border-radius: 16px;
+    padding: 24px;
+    width: 500px;
+    max-width: 100%;
+    max-height: 85vh;
+    overflow: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  
+  .modal h3 {
+    margin: 0 0 16px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  
+  .modal .row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  
+  .modal .row input, .modal .row select {
+    flex: 1;
+  }
+  
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  /* Small UI */
+  .muted {
+    color: var(--text-light);
+    font-size: 14px;
+  }
+  
+  .flex {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .leader-badge {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #78350f;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  
+  .stat-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  
+  .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+  
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .tab {
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-light);
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .tab.active {
+    background: var(--accent);
+    color: white;
+  }
+  
+  .tab:hover:not(.active) {
+    background: #f1f5f9;
+    color: var(--text);
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Student list */
+  .student-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .student-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: white;
+    transition: all 0.2s;
+  }
+  
+  .student-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+  }
+  
+  .student-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .student-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  
+  .student-details {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .student-details h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .student-meta {
+    font-size: 13px;
+    color: var(--text-light);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    body {
+      flex-direction: column;
+      padding: 12px;
+      gap: 12px;
+    }
+    
+    .sidebar {
+      width: 100%;
+      max-height: unset;
+    }
+    
+    .top-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    
+    .top-actions > div {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .modal .row {
+      flex-direction: column;
+    }
+    
+    .student-item {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    
+    .student-actions {
+      width: 100%;
+      justify-content: stretch;
+    }
+    
+    .student-actions button {
+      flex: 1;
+    }
+    
+    .desktop-attendance {
+      display: none;
+    }
+    
+    .mobile-attendance {
+      display: flex;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    button {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+    
+    .modal {
+      padding: 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 8px;
+    }
+    
+    .sidebar, .card {
+      padding: 16px;
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .top-actions .flex {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .top-actions .flex button {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .mobile-dates-grid {
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Sidebar: Group creation + list -->
+  <aside class="sidebar">
+    <h1>📚 Guruhlar</h1>
+    <div class="controls-row">
+      <input id="newGroupName" placeholder="Yangi guruh nomi..." />
+      <button class="primary" onclick="createGroup()">➕ Qoʻshish</button>
+    </div>
+    <div id="groupsContainer"></div>
+
+    <hr style="border:none;height:1px;background:rgba(255,255,255,0.1);margin:16px 0" />
+
+    <div style="font-size:14px;color:rgba(255,255,255,0.9)">
+      <div style="margin-bottom:8px"><strong>📅 Hozirgi oy:</strong> <span id="currentMonthLabel"></span></div>
+      <div class="flex">
+        <button class="ghost" onclick="finalizeMonthPrompt()">📊 Oyni yakunlash</button>
+        <button class="ghost" onclick="exportAll()">💾 Eksport</button>
+        <button class="ghost" onclick="importPrompt()">📤 Import</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div id="emptyHint" class="card">
+      <h2>🎓 Davomat tizimiga xush kelibsiz</h2>
+      <p class="muted">O'ng tomondagi paneldan guruh tanlang yoki yangi guruh yarating. Guruh ichida o'quvchilar qo'shish, dars kunlarini sozlash, va har kuni davomat olib borish mumkin.</p>
+    </div>
+
+    <div id="groupArea" class="card" style="display:none">
+      <div class="top-actions">
+        <div class="flex">
+          <h2 id="groupTitle" style="margin:0"></h2>
+          <span id="groupSchedule" class="muted"></span>
+          <span id="leaderBadge"></span>
+        </div>
+
+        <div class="flex">
+          <button class="primary" onclick="openAddStudentModal()">👤 O'quvchi qo'shish</button>
+          <input type="date" id="datePicker" />
+          <button class="ghost" onclick="addDateFromPicker()">📅 Sana qo'shish</button>
+          <button class="warning" onclick="finalizeDate()">🔒 Sana yakunlash</button>
+          <button class="success" onclick="downloadCSV()">📊 Excel yuklash</button>
+        </div>
+      </div>
+
+      <div id="groupStats" class="stats-grid" style="display:none"></div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('attendance')">📋 Davomat</button>
+        <button class="tab" onclick="switchTab('students')">👥 O'quvchilar</button>
+        <button class="tab" onclick="switchTab('analytics')">📈 Statistika</button>
+      </div>
+
+      <div id="attendanceTab" class="tab-content active">
+        <!-- Desktop table view -->
+        <div class="desktop-attendance">
+          <div class="attendance-wrap">
+            <table class="attendance" id="attendanceTable"></table>
+          </div>
+        </div>
+
+        <!-- Mobile grid view -->
+        <div class="mobile-attendance" id="mobileAttendance">
+          <!-- Mobile content will be populated by JS -->
+        </div>
+      </div>
+
+      <div id="studentsTab" class="tab-content">
+        <div id="studentsList" class="student-list"></div>
+      </div>
+
+      <div id="analyticsTab" class="tab-content">
+        <div id="analyticsContent"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <div id="modalBack" class="modal-back">
+    <div id="modal" class="modal"></div>
+  </div>
+
+<script>
+// Data Model
+const STORAGE_KEY = 'att_system_v3';
+let state = loadState();
+let selectedGroupId = null;
+let currentTab = 'attendance';
+
+// Initialize
+function init() {
+  if (!state.currentMonth) {
+    const now = new Date();
+    state.currentMonth = now.toISOString().slice(0, 7);
+    saveState();
+  }
+  
+  if (!state.groups) state.groups = {};
+  if (!state.finalizedMonths) state.finalizedMonths = [];
+  
+  renderGroupsList();
+  updateCurrentMonthLabel();
+  checkMobileView();
+  
+  // Add resize listener for responsive behavior
+  window.addEventListener('resize', checkMobileView);
+}
+
+// Check if mobile view should be shown
+function checkMobileView() {
+  const isMobile = window.innerWidth <= 768;
+  document.querySelector('.desktop-attendance').style.display = isMobile ? 'none' : 'block';
+  document.querySelector('.mobile-attendance').style.display = isMobile ? 'flex' : 'none';
+  
+  if (isMobile && currentTab === 'attendance' && selectedGroupId) {
+    renderMobileAttendance();
+  }
+}
+
+// Storage helpers
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { groups: {}, currentMonth: null, finalizedMonths: [] };
+  } catch (e) {
+    return { groups: {}, currentMonth: null, finalizedMonths: [] };
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// Utility functions
+function uid(prefix = 'id') {
+  return prefix + '_' + Math.random().toString(36).slice(2, 11);
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function dateToMonth(d) {
+  return d.slice(0, 7);
+}
+
+function isFutureDate(d) {
+  return new Date(d) > new Date(todayISO());
+}
+
+function formatMonthLabel(ym) {
+  const [y, m] = ym.split('-');
+  const months = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'];
+  return `${months[parseInt(m, 10) - 1] || m} ${y}`;
+}
+
+function updateCurrentMonthLabel() {
+  document.getElementById('currentMonthLabel').textContent = formatMonthLabel(state.currentMonth);
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function defaultAvatar(name) {
+  const initials = (name || 'U').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  const colors = ['#4f46e5', '#059669', '#dc2626', '#7c3aed', '#ea580c'];
+  const color = colors[initials.charCodeAt(0) % colors.length];
+  
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="${color}"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="80" fill="white" font-family="Arial" font-weight="bold">${initials}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// Tab management
+function switchTab(tabName, event) {
+  currentTab = tabName;
+  
+  // Update tab buttons
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+  
+  if (event) {
+    event.target.classList.add('active');
+  } else {
+    document.querySelector(`.tab:nth-child(${tabName === 'attendance' ? 1 : tabName === 'students' ? 2 : 3})`).classList.add('active');
+  }
+  
+  document.getElementById(tabName + 'Tab').classList.add('active');
+  
+  // Render content
+  if (tabName === 'students') {
+    renderStudentsList();
+  } else if (tabName === 'analytics') {
+    renderAnalytics();
+  } else if (tabName === 'attendance') {
+    renderGroupArea();
+  }
+}
+
+// Groups management
+function renderGroupsList() {
+  const container = document.getElementById('groupsContainer');
+  const groups = Object.values(state.groups).sort((a, b) => a.name.localeCompare(b.name));
+  
+  if (groups.length === 0) {
+    container.innerHTML = '<div class="muted" style="text-align:center;padding:20px">Hozircha guruhlar mavjud emas. Yangi guruh qoʻshing.</div>';
+    return;
+  }
+  
+  container.innerHTML = groups.map(g => `
+    <div class="group-card" onclick="openGroup('${g.id}')">
+      <div class="info">
+        <div class="group-icon">${(g.name || 'G').slice(0, 2).toUpperCase()}</div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:700;font-size:16px; overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(g.name)}</div>
+          <div class="group-meta small">${renderScheduleText(g.settings)}</div>
+          <div class="group-meta small">${g.students ? g.students.length : 0} ta o'quvchi</div>
+        </div>
+      </div>
+      <div class="flex">
+        ${g.settings?.leaderId ? '<div class="leader-badge">⭐</div>' : ''}
+        <button class="settings-btn" title="Sozlamalar" onclick="event.stopPropagation(); openGroupSettings('${g.id}')">⚙️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderScheduleText(settings) {
+  if (!settings) return 'Dars jadvali yoʻq';
+  const days = settings.days?.length ? settings.days.join(', ') : 'Kunlar: -';
+  const times = settings.startTime && settings.endTime ? `| ${settings.startTime} - ${settings.endTime}` : '';
+  return `${days} ${times}`;
+}
+
+function createGroup() {
+  const nameInput = document.getElementById('newGroupName');
+  const name = nameInput.value.trim();
+  
+  if (!name) {
+    alert('Iltimos, guruh nomini kiriting');
+    nameInput.focus();
+    return;
+  }
+  
+  const id = uid('group');
+  state.groups[id] = {
+    id,
+    name,
+    settings: { 
+      days: ['Dushanba', 'Chorshanba', 'Juma'], 
+      startTime: '09:00', 
+      endTime: '10:30', 
+      leaderId: null 
+    },
+    students: [],
+    attendance: {},
+    lockedDates: {}
+  };
+  
+  saveState();
+  nameInput.value = '';
+  renderGroupsList();
+  openGroup(id);
+}
+
+function openGroup(groupId) {
+  selectedGroupId = groupId;
+  document.getElementById('emptyHint').style.display = 'none';
+  document.getElementById('groupArea').style.display = 'block';
+  
+  // Reset to attendance tab
+  switchTab('attendance');
+}
+
+function deleteGroup(groupId) {
+  if (!confirm(`"${state.groups[groupId].name}" guruhini oʻchirmoqchimisiz? Barcha o'quvchilar va davomat ma'lumotlari ham o'chib ketadi.`)) return;
+  
+  delete state.groups[groupId];
+  if (selectedGroupId === groupId) {
+    selectedGroupId = null;
+    document.getElementById('groupArea').style.display = 'none';
+    document.getElementById('emptyHint').style.display = 'block';
+  }
+  saveState();
+  renderGroupsList();
+}
+
+// Group settings modal
+function openGroupSettings(groupId) {
+  const g = state.groups[groupId];
+  const days = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
+  
+  showModal(`
+    <h3>⚙️ ${escapeHtml(g.name)} guruhi sozlamalari</h3>
+    
+    <div style="margin-bottom:16px">
+      <label style="display:block;margin-bottom:8px;font-weight:500">Guruh nomi</label>
+      <input id="setGroupName" value="${escapeHtml(g.name)}" style="width:100%" />
+    </div>
+    
+    <div style="margin-bottom:16px">
+      <label style="display:block;margin-bottom:8px;font-weight:500">Dars kunlari</label>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        ${days.map((d, i) => `
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="day_${i}" ${g.settings.days.includes(d) ? 'checked' : ''} />
+            <span>${d}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+    
+    <div style="margin-bottom:16px">
+      <label style="display:block;margin-bottom:8px;font-weight:500">Dars vaqti</label>
+      <div class="row">
+        <input id="startTime" type="time" value="${g.settings.startTime || '09:00'}" />
+        <span style="padding:0 8px">-</span>
+        <input id="endTime" type="time" value="${g.settings.endTime || '10:30'}" />
+      </div>
+    </div>
+    
+    <div style="margin-bottom:16px">
+      <label style="display:block;margin-bottom:8px;font-weight:500">Sardor</label>
+      <select id="leaderSelect" style="width:100%">
+        <option value="">— Sardor tanlanmagan —</option>
+        ${g.students.map(s => `
+          <option value="${s.id}" ${g.settings.leaderId === s.id ? 'selected' : ''}>
+            ${escapeHtml(s.fullName)}
+          </option>
+        `).join('')}
+      </select>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="primary" onclick="saveGroupSettings('${groupId}')">💾 Saqlash</button>
+      <button class="danger" onclick="deleteGroup('${groupId}'); closeModal()">🗑️ O'chirish</button>
+      <button class="ghost" onclick="closeModal()">❌ Bekor</button>
+    </div>
+  `);
+}
+
+function saveGroupSettings(groupId) {
+  const g = state.groups[groupId];
+  const newName = document.getElementById('setGroupName').value.trim();
+  
+  if (!newName) {
+    alert('Guruh nomi bo\'sh bo\'lmasligi kerak');
+    return;
+  }
+  
+  g.name = newName;
+  
+  // Get selected days
+  const days = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma', 'Shanba', 'Yakshanba'];
+  g.settings.days = days.filter((d, i) => document.getElementById('day_' + i).checked);
+  
+  g.settings.startTime = document.getElementById('startTime').value;
+  g.settings.endTime = document.getElementById('endTime').value;
+  g.settings.leaderId = document.getElementById('leaderSelect').value || null;
+  
+  saveState();
+  renderGroupsList();
+  renderGroupArea();
+  closeModal();
+}
+
+// Group area rendering
+function renderGroupArea() {
+  if (!selectedGroupId) return;
+  
+  const g = state.groups[selectedGroupId];
+  document.getElementById('groupTitle').textContent = g.name;
+  document.getElementById('groupSchedule').textContent = renderScheduleText(g.settings);
+  document.getElementById('leaderBadge').innerHTML = g.settings.leaderId ? 
+    '<span class="leader-badge">⭐ Sardor</span>' : '';
+
+  // Render stats
+  renderGroupStats(g);
+
+  // Set date picker
+  document.getElementById('datePicker').value = todayISO();
+
+  // Render both desktop and mobile views
+  renderDesktopAttendance();
+  if (window.innerWidth <= 768) {
+    renderMobileAttendance();
+  }
+}
+
+function renderDesktopAttendance() {
+  const g = state.groups[selectedGroupId];
+  
+  // Get and sort dates
+  let dates = Object.keys(g.attendance).sort();
+  
+  // Add today's date if it doesn't exist and it's current month
+  const today = todayISO();
+  if (!dates.includes(today) && !isFutureDate(today) && dateToMonth(today) === state.currentMonth) {
+    g.attendance[today] = {};
+    saveState();
+    dates.push(today);
+    dates.sort();
+  }
+
+  // Render table
+  const table = document.getElementById('attendanceTable');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th class="student-name-cell">👤 O'quvchi</th>
+        ${dates.map(d => `
+          <th class="date-header">
+            ${formatDateDisplay(d)}
+            ${g.lockedDates && g.lockedDates[d] ? ' 🔒' : ''}
+          </th>
+        `).join('')}
+        <th>⚡ Harakatlar</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${g.students.length === 0 ? `
+        <tr>
+          <td colspan="${dates.length + 2}" class="muted" style="text-align:center;padding:40px">
+            🎓 Guruhda o'quvchilar yo'q — <button class="primary" onclick="openAddStudentModal()">Yangi o'quvchi qo'shing</button>
+          </td>
+        </tr>
+      ` : g.students.map(s => `
+        <tr class="student-row">
+          <td class="student-name-cell">
+            <div style="display:flex;align-items:center;gap:12px">
+              <img src="${s.avatarBase64 || defaultAvatar(s.fullName)}" 
+                   alt="avatar" 
+                   style="width:36px;height:36px;border-radius:6px;object-fit:cover;cursor:pointer" 
+                   onclick="openStudentProfile('${selectedGroupId}','${s.id}')"/>
+              <div style="min-width:0;flex:1">
+                <div style="font-weight:600;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" 
+                     onclick="openStudentProfile('${selectedGroupId}','${s.id}')">
+                  ${escapeHtml(s.fullName)}
+                </div>
+                <div class="small muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                  ${escapeHtml(s.phone || '')} ${s.grade ? ' • ' + escapeHtml(s.grade) : ''}
+                </div>
+              </div>
+            </div>
+          </td>
+          ${dates.map(d => {
+            const status = g.attendance[d] && g.attendance[d][s.id];
+            let className = '';
+            let text = '';
+            
+            if (status === 'present') {
+              className = 'present';
+              text = '✅';
+            } else if (status === 'absent') {
+              className = 'absent';
+              text = '❌';
+            } else if (status === 'late') {
+              className = 'late';
+              text = '⚠️';
+            }
+            
+            return `
+              <td class="attendance-cell ${className}" onclick="toggleAttendanceCell('${selectedGroupId}', '${s.id}', '${d}')">
+                ${text}
+                <div class="attendance-controls">
+                  <button class="attendance-btn btn-present" onclick="event.stopPropagation(); setAttendance('${selectedGroupId}', '${s.id}', '${d}', 'present')">+</button>
+                  <button class="attendance-btn btn-absent" onclick="event.stopPropagation(); setAttendance('${selectedGroupId}', '${s.id}', '${d}', 'absent')">-</button>
+                  <button class="attendance-btn btn-late" onclick="event.stopPropagation(); setAttendance('${selectedGroupId}', '${s.id}', '${d}', 'late')">±</button>
+                  <button class="attendance-btn btn-clear" onclick="event.stopPropagation(); setAttendance('${selectedGroupId}', '${s.id}', '${d}', '')">×</button>
+                </div>
+              </td>
+            `;
+          }).join('')}
+          <td>
+            <div class="student-actions">
+              <button class="primary" onclick="openEditStudent('${selectedGroupId}','${s.id}')">✏️</button>
+              <button class="warning" onclick="moveStudentPrompt('${selectedGroupId}','${s.id}')">↗️</button>
+              <button class="danger" onclick="deleteStudent('${selectedGroupId}','${s.id}')">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+function renderMobileAttendance() {
+  const g = state.groups[selectedGroupId];
+  const container = document.getElementById('mobileAttendance');
+  
+  if (g.students.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px" class="muted">
+        <div style="font-size:48px;margin-bottom:16px">🎓</div>
+        <div style="margin-bottom:16px">Guruhda o'quvchilar yo'q</div>
+        <button class="primary" onclick="openAddStudentModal()">👤 O'quvchi qo'shish</button>
+      </div>
+    `;
+    return;
+  }
+  
+  // Get and sort dates
+  let dates = Object.keys(g.attendance).sort();
+  
+  container.innerHTML = g.students.map(s => `
+    <div class="mobile-student-card">
+      <div class="mobile-student-header">
+        <img src="${s.avatarBase64 || defaultAvatar(s.fullName)}" 
+             alt="avatar" 
+             class="mobile-student-avatar" />
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:16px">${escapeHtml(s.fullName)}</div>
+          <div class="muted" style="font-size:13px">
+            ${s.phone || ''} ${s.grade ? ' • ' + escapeHtml(s.grade) : ''}
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-dates-grid">
+        ${dates.map(d => {
+          const status = g.attendance[d] && g.attendance[d][s.id];
+          let className = '';
+          let text = '';
+          
+          if (status === 'present') {
+            className = 'present';
+            text = '✅ Bor';
+          } else if (status === 'absent') {
+            className = 'absent';
+            text = '❌ Yo\'q';
+          } else if (status === 'late') {
+            className = 'late';
+            text = '⚠️ Kech';
+          } else {
+            text = 'Belgilanmagan';
+          }
+          
+          return `
+            <div class="mobile-date-cell ${className}" onclick="toggleAttendanceCell('${selectedGroupId}', '${s.id}', '${d}')">
+              <div style="font-size:11px;font-weight:500;margin-bottom:4px">${formatDateDisplay(d)}</div>
+              <div style="font-size:12px">${text}</div>
+              <div style="display:flex;gap:2px;margin-top:4px;flex-wrap:wrap;">
+                <button class="attendance-btn btn-present" onclick="event.stopPropagation(); setAttendance('${selectedGroupId}', '${s.id}', '${d}', 'present')">+</button>
+                <button class="attendance-btn btn-absent" onclick="event.stopPropagation(); setAttendance('${selectedGroupId}', '${s.id}', '${d}', 'absent')">-</button>
+                <button class="attendance-btn btn-late" onclick="event.stopPropagation(); setAttendance('${selectedGroupId}', '${s.id}', '${d}', 'late')">±</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      
+      <div class="student-actions" style="margin-top:12px">
+        <button class="primary" onclick="openEditStudent('${selectedGroupId}','${s.id}')">✏️ Tahrirlash</button>
+        <button class="warning" onclick="moveStudentPrompt('${selectedGroupId}','${s.id}')">↗️ Ko'chirish</button>
+        <button class="danger" onclick="deleteStudent('${selectedGroupId}','${s.id}')">🗑️ O'chirish</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGroupStats(g) {
+  const statsContainer = document.getElementById('groupStats');
+  statsContainer.style.display = 'grid';
+  
+  const totalStudents = g.students.length;
+  const dates = Object.keys(g.attendance).sort();
+  const totalLessons = dates.length;
+  
+  let totalPresent = 0, totalAbsent = 0, totalLate = 0;
+  
+  dates.forEach(date => {
+    const dayAttendance = g.attendance[date] || {};
+    Object.values(dayAttendance).forEach(status => {
+      if (status === 'present') totalPresent++;
+      else if (status === 'absent') totalAbsent++;
+      else if (status === 'late') totalLate++;
+    });
+  });
+  
+  const totalRecords = totalPresent + totalAbsent + totalLate;
+  const attendanceRate = totalRecords > 0 ? Math.round((totalPresent / totalRecords) * 100) : 0;
+  
+  statsContainer.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${totalStudents}</div>
+      <div class="stat-label">👥 O'quvchilar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${totalLessons}</div>
+      <div class="stat-label">📚 Darslar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${attendanceRate}%</div>
+      <div class="stat-label">📊 Davomat</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${totalPresent}|${totalAbsent}|${totalLate}</div>
+      <div class="stat-label">✅ Bor | ❌ Yo'q | ⚠️ Kech</div>
+    </div>
+  `;
+}
+
+function formatDateDisplay(dateStr) {
+  const date = new Date(dateStr);
+  const options = { day: 'numeric', month: 'short' };
+  return date.toLocaleDateString('uz-UZ', options);
+}
+
+// Improved attendance management
+function toggleAttendanceCell(groupId, studentId, date) {
+  const g = state.groups[groupId];
+  
+  if (isFutureDate(date)) {
+    alert('Kelajak sanalar uchun davomat qoʻshib boʻlmaydi');
+    return;
+  }
+  
+  if (g.lockedDates && g.lockedDates[date]) {
+    const reason = prompt('Bu sana yakunlangan. Oʻzgartirish uchun sabab kiriting:');
+    if (!reason) return;
+  }
+  
+  const current = g.attendance[date] && g.attendance[date][studentId];
+  const statuses = ['', 'present', 'late', 'absent'];
+  const currentIndex = statuses.indexOf(current);
+  const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+  
+  setAttendance(groupId, studentId, date, nextStatus);
+}
+
+function setAttendance(groupId, studentId, date, status) {
+  const g = state.groups[groupId];
+  
+  if (isFutureDate(date)) {
+    alert('Kelajak sanalar uchun davomat qoʻshib boʻlmaydi');
+    return;
+  }
+  
+  if (g.lockedDates && g.lockedDates[date]) {
+    const reason = prompt('Bu sana yakunlangan. Oʻzgartirish uchun sabab kiriting:');
+    if (!reason) return;
+  }
+  
+  if (!g.attendance[date]) g.attendance[date] = {};
+  
+  if (status) {
+    g.attendance[date][studentId] = status;
+  } else {
+    delete g.attendance[date][studentId];
+  }
+  
+  saveState();
+  renderGroupArea();
+  if (currentTab === 'analytics') renderAnalytics();
+}
+
+// Students list tab (unchanged, but included for completeness)
+function renderStudentsList() {
+  if (!selectedGroupId) return;
+  
+  const g = state.groups[selectedGroupId];
+  const container = document.getElementById('studentsList');
+  
+  if (g.students.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px" class="muted">
+        <div style="font-size:48px;margin-bottom:16px">🎓</div>
+        <div style="margin-bottom:16px">Guruhda o'quvchilar yo'q</div>
+        <button class="primary" onclick="openAddStudentModal()">👤 O'quvchi qo'shish</button>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = g.students.map(student => {
+    const isLeader = g.settings.leaderId === student.id;
+    
+    return `
+      <div class="student-item">
+        <div class="student-info">
+          <img src="${student.avatarBase64 || defaultAvatar(student.fullName)}" 
+               alt="avatar" 
+               class="student-avatar" />
+          <div class="student-details">
+            <h4>
+              ${escapeHtml(student.fullName)}
+              ${isLeader ? '<span class="leader-badge" style="margin-left:8px">⭐ Sardor</span>' : ''}
+            </h4>
+            <div class="student-meta">
+              ${student.phone ? `📱 ${escapeHtml(student.phone)}` : ''}
+              ${student.grade ? ` • 🎯 ${escapeHtml(student.grade)} sinf` : ''}
+              ${student.school ? ` • 🏫 ${escapeHtml(student.school)}` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="student-actions">
+          <button class="primary" onclick="openEditStudent('${selectedGroupId}','${student.id}')">✏️ Tahrirlash</button>
+          <button class="warning" onclick="moveStudentPrompt('${selectedGroupId}','${student.id}')">↗️ Ko'chirish</button>
+          <button class="danger" onclick="deleteStudent('${selectedGroupId}','${student.id}')">🗑️ O'chirish</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Analytics tab (unchanged, but included for completeness)
+function renderAnalytics() {
+  if (!selectedGroupId) return;
+  
+  const g = state.groups[selectedGroupId];
+  const container = document.getElementById('analyticsContent');
+  
+  if (g.students.length === 0) {
+    container.innerHTML = '<div class="muted" style="text-align:center;padding:40px">Tahlil qilish uchun o\'quvchilar yo\'q</div>';
+    return;
+  }
+  
+  const dates = Object.keys(g.attendance).sort();
+  if (dates.length === 0) {
+    container.innerHTML = '<div class="muted" style="text-align:center;padding:40px">Hali davomat ma\'lumotlari yo\'q</div>';
+    return;
+  }
+  
+  // Calculate statistics
+  const studentStats = g.students.map(student => {
+    let present = 0, absent = 0, late = 0;
+    
+    dates.forEach(date => {
+      const status = g.attendance[date] && g.attendance[date][student.id];
+      if (status === 'present') present++;
+      else if (status === 'absent') absent++;
+      else if (status === 'late') late++;
+    });
+    
+    const total = present + absent + late;
+    const attendanceRate = total > 0 ? Math.round((present / total) * 100) : 0;
+    
+    return { ...student, present, absent, late, attendanceRate, total };
+  }).sort((a, b) => b.attendanceRate - a.attendanceRate);
+  
+  // Overall statistics
+  const totalPresent = studentStats.reduce((sum, s) => sum + s.present, 0);
+  const totalAbsent = studentStats.reduce((sum, s) => sum + s.absent, 0);
+  const totalLate = studentStats.reduce((sum, s) => sum + s.late, 0);
+  const overallAttendance = Math.round((totalPresent / (totalPresent + totalAbsent + totalLate)) * 100);
+  
+  container.innerHTML = `
+    <div style="margin-bottom:24px">
+      <h3 style="margin-bottom:16px">📈 Umumiy statistika</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">${overallAttendance}%</div>
+          <div class="stat-label">📊 Umumiy davomat</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${dates.length}</div>
+          <div class="stat-label">📚 Jami darslar</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${g.students.length}</div>
+          <div class="stat-label">👥 Jami o'quvchilar</div>
+        </div>
+      </div>
+    </div>
+    
+    <h3 style="margin-bottom:16px">👤 O'quvchilar reytingi</h3>
+    <div style="overflow:auto; border:1px solid var(--border); border-radius:12px;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#f8fafc">
+            <th style="padding:12px; text-align:left; border-bottom:1px solid var(--border)">O'quvchi</th>
+            <th style="padding:12px; text-align:center; border-bottom:1px solid var(--border)">Davomat</th>
+            <th style="padding:12px; text-align:center; border-bottom:1px solid var(--border)">✅ Bor</th>
+            <th style="padding:12px; text-align:center; border-bottom:1px solid var(--border)">❌ Yo'q</th>
+            <th style="padding:12px; text-align:center; border-bottom:1px solid var(--border)">⚠️ Kech</th>
+            <th style="padding:12px; text-align:center; border-bottom:1px solid var(--border)">Jami</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${studentStats.map((student, index) => `
+            <tr style="${index % 2 === 0 ? 'background:#fafafa' : ''}">
+              <td style="padding:12px; border-bottom:1px solid var(--border)">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <img src="${student.avatarBase64 || defaultAvatar(student.fullName)}" 
+                       style="width:32px;height:32px;border-radius:6px;object-fit:cover" />
+                  ${escapeHtml(student.fullName)}
+                  ${index < 3 ? ' 🏆' : ''}
+                </div>
+              </td>
+              <td style="padding:12px; text-align:center; border-bottom:1px solid var(--border); font-weight:600; color:${student.attendanceRate >= 80 ? '#059669' : student.attendanceRate >= 60 ? '#d97706' : '#dc2626'}">
+                ${student.attendanceRate}%
+              </td>
+              <td style="padding:12px; text-align:center; border-bottom:1px solid var(--border); color:#059669">${student.present}</td>
+              <td style="padding:12px; text-align:center; border-bottom:1px solid var(--border); color:#dc2626">${student.absent}</td>
+              <td style="padding:12px; text-align:center; border-bottom:1px solid var(--border); color:#d97706">${student.late}</td>
+              <td style="padding:12px; text-align:center; border-bottom:1px solid var(--border); font-weight:600">${student.total}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Date management (unchanged)
+function addDateFromPicker() {
+  const date = document.getElementById('datePicker').value;
+  
+  if (!date) {
+    alert('Iltimos, sana tanlang');
+    return;
+  }
+  
+  if (isFutureDate(date)) {
+    alert('Kelajak sanalar uchun davomat qilinmaydi');
+    return;
+  }
+  
+  if (dateToMonth(date) !== state.currentMonth) {
+    if (!confirm('Tanlangan sana hozirgi oyga tegishli emas. Davom etilsinmi?')) return;
+  }
+  
+  const g = state.groups[selectedGroupId];
+  if (!g.attendance[date]) g.attendance[date] = {};
+  
+  saveState();
+  renderGroupArea();
+}
+
+function finalizeDate() {
+  const date = document.getElementById('datePicker').value;
+  
+  if (!date) {
+    alert('Iltimos, sana tanlang');
+    return;
+  }
+  
+  if (isFutureDate(date)) {
+    alert('Kelajak sanalarni yakunlash mumkin emas');
+    return;
+  }
+  
+  const g = state.groups[selectedGroupId];
+  g.lockedDates = g.lockedDates || {};
+  g.lockedDates[date] = true;
+  
+  saveState();
+  alert(`"${date}" sanasi uchun davomat yakunlandi 🔒`);
+  renderGroupArea();
+}
+
+// Student management functions (unchanged, but included for completeness)
+function openAddStudentModal(editStudentId = null) {
+  const g = state.groups[selectedGroupId];
+  const student = editStudentId ? g.students.find(s => s.id === editStudentId) : { 
+    fullName: '', phone: '', grade: '', school: '', avatarBase64: '' 
+  };
+  
+  showModal(`
+    <h3>${editStudentId ? '✏️ Oʻquvchini tahrirlash' : "👤 Yangi o'quvchi qo'shish"}</h3>
+    
+    <div style="margin-bottom:16px">
+      <label style="display:block;margin-bottom:8px;font-weight:500">Ism Familiya *</label>
+      <input id="stu_fullName" value="${escapeHtml(student.fullName)}" placeholder="Aliyev Ali" style="width:100%" />
+    </div>
+    
+    <div style="margin-bottom:16px">
+      <label style="display:block;margin-bottom:8px;font-weight:500">Telefon raqam</label>
+      <input id="stu_phone" value="${escapeHtml(student.phone)}" placeholder="+998901234567" style="width:100%" />
+    </div>
+    
+    <div class="row">
+      <div style="flex:1">
+        <label style="display:block;margin-bottom:8px;font-weight:500">Sinf</label>
+        <input id="stu_grade" value="${escapeHtml(student.grade)}" placeholder="5-sinf" />
+      </div>
+      <div style="flex:1">
+        <label style="display:block;margin-bottom:8px;font-weight:500">Maktab</label>
+        <input id="stu_school" value="${escapeHtml(student.school)}" placeholder="25-maktab" />
+      </div>
+    </div>
+    
+    <div style="margin-bottom:16px">
+      <label style="display:block;margin-bottom:8px;font-weight:500">Rasm (ixtiyoriy)</label>
+      <div class="row">
+        <input id="stu_avatar_url" placeholder="Rasm URL manzili" style="flex:1" />
+        <input id="stu_avatar_file" type="file" accept="image/*" />
+      </div>
+      <div style="margin-top:12px;text-align:center">
+        <img id="previewAvatar" src="${student.avatarBase64 || defaultAvatar(student.fullName)}" 
+             style="width:100px;height:100px;border-radius:12px;object-fit:cover;border:2px solid var(--border)" />
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="primary" onclick="saveStudent('${editStudentId || ''}')">💾 Saqlash</button>
+      ${editStudentId ? `<button class="danger" onclick="deleteStudent('${selectedGroupId}','${editStudentId}')">🗑️ O'chirish</button>` : ''}
+      <button class="ghost" onclick="closeModal()">❌ Bekor</button>
+    </div>
+  `);
+  
+  // Setup avatar preview
+  const fileInput = document.getElementById('stu_avatar_file');
+  fileInput.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      document.getElementById('previewAvatar').src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+}
+
+function saveStudent(editStudentId = '') {
+  const g = state.groups[selectedGroupId];
+  const fullName = document.getElementById('stu_fullName').value.trim();
+  
+  if (!fullName) {
+    alert('Iltimos, ism familiyani kiriting');
+    return;
+  }
+  
+  const studentData = {
+    fullName,
+    phone: document.getElementById('stu_phone').value.trim(),
+    grade: document.getElementById('stu_grade').value.trim(),
+    school: document.getElementById('stu_school').value.trim(),
+    avatarBase64: document.getElementById('previewAvatar').src.startsWith('data:') ? 
+                  document.getElementById('previewAvatar').src : ''
+  };
+  
+  if (editStudentId) {
+    // Edit existing student
+    const student = g.students.find(s => s.id === editStudentId);
+    if (student) Object.assign(student, studentData);
+  } else {
+    // Add new student
+    studentData.id = uid('stu');
+    studentData.isLeader = false;
+    g.students.push(studentData);
+  }
+  
+  saveState();
+  closeModal();
+  renderGroupArea();
+  if (currentTab === 'students') renderStudentsList();
+  if (currentTab === 'analytics') renderAnalytics();
+  renderGroupsList();
+}
+
+function deleteStudent(groupId, studentId) {
+  const g = state.groups[groupId];
+  const student = g.students.find(s => s.id === studentId);
+  
+  if (!student || !confirm(`"${student.fullName}" o'quvchisini o'chirmoqchimisiz?`)) return;
+  
+  g.students = g.students.filter(s => s.id !== studentId);
+  
+  // Remove attendance records
+  Object.keys(g.attendance).forEach(date => {
+    if (g.attendance[date][studentId]) {
+      delete g.attendance[date][studentId];
+    }
+  });
+  
+  // Remove leader status if this student was leader
+  if (g.settings.leaderId === studentId) {
+    g.settings.leaderId = null;
+  }
+  
+  saveState();
+  if (document.getElementById('modalBack').style.display === 'flex') closeModal();
+  
+  renderGroupArea();
+  if (currentTab === 'students') renderStudentsList();
+  if (currentTab === 'analytics') renderAnalytics();
+  renderGroupsList();
+}
+
+function moveStudentPrompt(groupId, studentId) {
+  const g = state.groups[groupId];
+  const student = g.students.find(s => s.id === studentId);
+  const otherGroups = Object.values(state.groups).filter(gr => gr.id !== groupId);
+  
+  if (!student) return;
+  
+  if (otherGroups.length === 0) {
+    alert('Boshqa guruh mavjud emas. Avval yangi guruh yarating.');
+    return;
+  }
+  
+  showModal(`
+    <h3>↗️ O'quvchini ko'chirish</h3>
+    <p><strong>${escapeHtml(student.fullName)}</strong> ni qaysi guruhga ko'chirmoqchisiz?</p>
+    
+    <div style="margin:16px 0">
+      <select id="targetGroupSelect" style="width:100%">
+        <option value="">— Guruh tanlang —</option>
+        ${otherGroups.map(gr => `
+          <option value="${gr.id}">${escapeHtml(gr.name)} (${gr.students.length} ta o'quvchi)</option>
+        `).join('')}
+      </select>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="primary" onclick="moveStudent('${groupId}', '${studentId}')">✅ Ko'chirish</button>
+      <button class="ghost" onclick="closeModal()">❌ Bekor</button>
+    </div>
+  `);
+}
+
+function moveStudent(sourceGroupId, studentId) {
+  const targetGroupId = document.getElementById('targetGroupSelect').value;
+  
+  if (!targetGroupId) {
+    alert('Iltimos, guruh tanlang');
+    return;
+  }
+  
+  const sourceGroup = state.groups[sourceGroupId];
+  const targetGroup = state.groups[targetGroupId];
+  const student = sourceGroup.students.find(s => s.id === studentId);
+  
+  if (!student) {
+    alert('O\'quvchi topilmadi');
+    return;
+  }
+  
+  // Check if student already exists in target group
+  if (targetGroup.students.some(s => s.id === studentId)) {
+    alert('Bu o\'quvchi allaqachon ushbu guruhda mavjud');
+    return;
+  }
+  
+  // Move student
+  targetGroup.students.push({...student});
+  sourceGroup.students = sourceGroup.students.filter(s => s.id !== studentId);
+  
+  // Remove leader status if this student was leader
+  if (sourceGroup.settings.leaderId === studentId) {
+    sourceGroup.settings.leaderId = null;
+  }
+  
+  saveState();
+  closeModal();
+  
+  renderGroupArea();
+  if (currentTab === 'students') renderStudentsList();
+  if (currentTab === 'analytics') renderAnalytics();
+  renderGroupsList();
+  
+  alert(`✅ "${student.fullName}" ${targetGroup.name} guruhiga ko'chirildi`);
+}
+
+function openStudentProfile(groupId, studentId) {
+  const g = state.groups[groupId];
+  const s = g.students.find(x => x.id === studentId);
+  if (!s) return;
+  
+  // Calculate student stats
+  const dates = Object.keys(g.attendance).sort();
+  let present = 0, absent = 0, late = 0;
+  
+  dates.forEach(date => {
+    const status = g.attendance[date] && g.attendance[date][s.id];
+    if (status === 'present') present++;
+    else if (status === 'absent') absent++;
+    else if (status === 'late') late++;
+  });
+  
+  const total = present + absent + late;
+  const attendanceRate = total > 0 ? Math.round((present / total) * 100) : 0;
+  
+  showModal(`
+    <h3>👤 O'quvchi profili</h3>
+    
+    <div style="display:flex;gap:20px;align-items:center;margin-bottom:20px">
+      <img src="${s.avatarBase64 || defaultAvatar(s.fullName)}" 
+           style="width:120px;height:120px;border-radius:16px;object-fit:cover" />
+      <div style="flex:1">
+        <div style="font-size:24px;font-weight:700;margin-bottom:8px">${escapeHtml(s.fullName)}</div>
+        <div style="color:var(--text-light);margin-bottom:4px">${s.phone ? `📱 ${escapeHtml(s.phone)}` : '📱 Telefon kiritilmagan'}</div>
+        <div style="color:var(--text-light);margin-bottom:4px">${s.grade ? `🎯 ${escapeHtml(s.grade)} sinf` : ''}</div>
+        <div style="color:var(--text-light)">${s.school ? `🏫 ${escapeHtml(s.school)}` : ''}</div>
+      </div>
+    </div>
+    
+    <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:20px">
+      <div style="font-weight:600;margin-bottom:8px">📊 Davomat statistikasi</div>
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);gap:8px;margin:0">
+        <div style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#059669">${attendanceRate}%</div>
+          <div style="font-size:12px;color:var(--text-light)">Davomat</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#059669">${present}</div>
+          <div style="font-size:12px;color:var(--text-light)">✅ Bor</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#dc2626">${absent}</div>
+          <div style="font-size:12px;color:var(--text-light)">❌ Yo'q</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#d97706">${late}</div>
+          <div style="font-size:12px;color:var(--text-light)">⚠️ Kech</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="primary" onclick="openEditStudent('${groupId}','${studentId}')">✏️ Tahrirlash</button>
+      <button class="warning" onclick="moveStudentPrompt('${groupId}','${studentId}')">↗️ Ko'chirish</button>
+      <button class="danger" onclick="deleteStudent('${groupId}','${studentId}')">🗑️ O'chirish</button>
+      <button class="ghost" onclick="closeModal()">❌ Yopish</button>
+    </div>
+  `);
+}
+
+function openEditStudent(groupId, studentId) {
+  closeModal();
+  setTimeout(() => openAddStudentModal(studentId), 100);
+}
+
+// Modal management
+function showModal(html) {
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('modalBack').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('modalBack').style.display = 'none';
+}
+
+document.getElementById('modalBack').addEventListener('click', function(e) {
+  if (e.target.id === 'modalBack') closeModal();
+});
+
+// Month finalization
+function finalizeMonthPrompt() {
+  const currentLabel = formatMonthLabel(state.currentMonth);
+  const label = prompt('Yakunlanayotgan oy nomini kiriting:', currentLabel);
+  
+  if (!label) return;
+  
+  state.finalizedMonths.push({ month: state.currentMonth, label });
+  
+  // Move to next month
+  const [y, m] = state.currentMonth.split('-').map(x => parseInt(x, 10));
+  let nextYear = y, nextMonth = m + 1;
+  
+  if (nextMonth > 12) {
+    nextMonth = 1;
+    nextYear = y + 1;
+  }
+  
+  state.currentMonth = `${nextYear}-${nextMonth.toString().padStart(2, '0')}`;
+  saveState();
+  updateCurrentMonthLabel();
+  
+  alert(`✅ ${label} oyi yakunlandi. Yangi oy: ${formatMonthLabel(state.currentMonth)}`);
+  renderGroupsList();
+  renderGroupArea();
+}
+
+// Export/Import
+function exportAll() {
+  const dataStr = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  
+  a.href = url;
+  a.download = `davomat_backup_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importPrompt() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const data = JSON.parse(ev.target.result);
+        
+        if (confirm('Import qilsangiz, mavjud ma\'lumotlar ustiga yoziladi. Davom etilsinmi?')) {
+          state = data;
+          saveState();
+          renderGroupsList();
+          renderGroupArea();
+          updateCurrentMonthLabel();
+          alert('✅ Ma\'lumotlar muvaffaqiyatli import qilindi');
+        }
+      } catch (err) {
+        alert('❌ Noto\'g\'ri formatdagi fayl');
+      }
+    };
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
+
+// CSV Export
+function downloadCSV() {
+  if (!selectedGroupId) {
+    alert('Iltimos, avval guruh tanlang');
+    return;
+  }
+  
+  const g = state.groups[selectedGroupId];
+  const dates = Object.keys(g.attendance).sort();
+  const header = ['O\'quvchi', ...dates];
+  const rows = [header];
+  
+  g.students.forEach(s => {
+    const row = [s.fullName];
+    dates.forEach(d => {
+      const status = g.attendance[d] && g.attendance[d][s.id];
+      row.push(status === 'present' ? 'BOR' : status === 'absent' ? 'YO\'Q' : status === 'late' ? 'KECH' : '');
+    });
+    rows.push(row);
+  });
+  
+  const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  
+  a.href = url;
+  a.download = `${g.name.replace(/\s+/g, '_')}_davomat_${state.currentMonth}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Initialize the application
+init();
+
+// Make functions globally available
+window.createGroup = createGroup;
+window.openGroup = openGroup;
+window.openGroupSettings = openGroupSettings;
+window.openAddStudentModal = openAddStudentModal;
+window.finalizeMonthPrompt = finalizeMonthPrompt;
+window.addDateFromPicker = addDateFromPicker;
+window.finalizeDate = finalizeDate;
+window.downloadCSV = downloadCSV;
+window.exportAll = exportAll;
+window.importPrompt = importPrompt;
+window.openStudentProfile = openStudentProfile;
+window.deleteGroup = deleteGroup;
+window.switchTab = switchTab;
+window.openEditStudent = openEditStudent;
+window.moveStudentPrompt = moveStudentPrompt;
+window.deleteStudent = deleteStudent;
+window.toggleAttendanceCell = toggleAttendanceCell;
+window.setAttendance = setAttendance;
+</script>
+</body>
+</html>
